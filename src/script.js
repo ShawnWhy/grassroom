@@ -8,6 +8,7 @@ import { LoopOnce, SphereGeometry, TextureLoader } from 'three'
 import $ from "./Jquery"
 import gsap from "gsap"
 import { ARButton } from 'three/examples/jsm/webxr/ARButton.js';
+import { GridBroadphase } from 'cannon'
 
 let reticle= null
 let camera;
@@ -67,6 +68,11 @@ gltfLoader.load(
   }
 )
 
+controller.addEventListener('select', ()=>{
+  
+
+    createGrass()
+  })
 
 const sizes = {
   width: window.innerWidth,
@@ -130,54 +136,33 @@ $(window).click(e=>{
   e.stopPropagation();
 })
 
+const grassMaterial = new THREE.MeshBasicMaterial({color:"green"})
+
+
 const createGrass =()=>{
   
 
-  let randTag= Math.floor(Math.random()*3+1)
-  console.log(randTag)
-  let tag;
-  const tagTexture1 = textureLoader.load('/teapot1.png')
-  const tagMaterial1 = new THREE.MeshStandardMaterial({map:tagTexture1})
-  tagMaterial1.transparent=true
-  // tagMaterial1.alphaMap=tagTexture1
-
-  const tagTexture2 = textureLoader.load('/teapot2.png')
-  const tagMaterial2 = new THREE.MeshStandardMaterial({map:tagTexture2})
-  tagMaterial2.transparent=true
-  // tagMaterial2.alphaMap=tagTexture2
-
-  const tagTexture3 = textureLoader.load('/teapots3.png')
-  const tagMaterial3 = new THREE.MeshStandardMaterial({map:tagTexture3})
-  tagMaterial3.transparent=true
-  // tagMaterial3.alphaMap=tagTexture3
-
-
-
-  const tagGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI/2)
-  
-
-
-  switch(randTag){
-    case 1: tag= new THREE.Mesh(tagGeo, tagMaterial1)
-      break;
-      
-    case 2: tag= new THREE.Mesh(tagGeo, tagMaterial2)
-      break;
-    
-    case 3: tag= new THREE.Mesh(tagGeo, tagMaterial3)
-      
-      
-  }
- 
-  tag.position.setFromMatrixPosition(reticle.matrix);
-  tag.quaternion.setFromRotationMatrix(reticle.matrix);
-  tag.scale.x=.2
-  tag.scale.y=.2
-  tag.scale.z=.2
+  let randGrass= Math.floor(Math.random()*2+1)
+  console.log(randGrass)
+  let grass
 
 
   
-  scene.add(tag)
+
+
+  switch(randGrass){
+    case 1: tag= new THREE.Mesh(grassgeo1, grassMaterial)
+      break;
+      
+    case 2: tag= new THREE.Mesh(grassgeo2, grassMaterial)
+      
+}
+  grass.position.setFromMatrixPosition(reticle.matrix);
+  grass.quaternion.setFromRotationMatrix(reticle.matrix);
+  grass.scale.x=.2
+  grass.scale.y=.2
+  grass.scale.z=.2
+  scene.add(grass)
 }
 
 init();
