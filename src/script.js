@@ -13,6 +13,7 @@ import { GridBroadphase } from 'cannon'
 let reticle= null
 let camera;
 let renderer;
+let mixer;
 const container = document.createElement('div');
 document.body.appendChild(container);
 const textureLoader = new THREE.TextureLoader()
@@ -36,11 +37,9 @@ function init() {
     }
   
 
-    const createFlower = ()=>{
 
-      
-    }
-  
+    
+    
    
   
     const createGrass =()=>{
@@ -137,6 +136,10 @@ gltfLoader.load(
   (gltf) =>
   {
     butterfly = gltf.scene
+    createButterFly();
+
+   
+
   }
 )
 gltfLoader.load(
@@ -145,6 +148,7 @@ gltfLoader.load(
   (gltf) =>
   {
     flower = gltf.scene
+    createFlower();
   }
 )
 
@@ -186,14 +190,28 @@ gltfLoader.load(
     }
 )
 
+const createFlower = ()=>{
 
-const createButterFly = function(){
-console.log('createButterfly')
-  mixer = new THREE.AnimationMixer(butterfly)
+  console.log("createflower")
+  let newFlower = flower.clone();
+  console.log(newFlower);
 
+    
+  }
 
+  const createButterFly = function(){
+    let newButterFly = butterfly.clone()
+    console.log(newButterFly);
+    console.log('createButterfly')
+    newButterFly.scale.set(.01,.01,.01)
+      mixer = new THREE.AnimationMixer(newButterFly)
 
-}
+      // scene.add(newButterFly)
+      
+    
+    
+    
+    }
 
 const createTree = function(){
 
