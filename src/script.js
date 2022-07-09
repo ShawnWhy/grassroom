@@ -35,6 +35,11 @@ function init() {
         window.addEventListener('resize', onWindowResize, false);
     }
   
+
+    const createFlower = ()=>{
+
+      
+    }
   
    
   
@@ -119,7 +124,54 @@ camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight,
 
 let grassgeo1;
 let grassgeo2;
+let tree1;
+let tree2;
+let tree3;
+let butterfly;
+let flower;
 
+
+gltfLoader.load(
+
+  '/butterfly.glb',
+  (gltf) =>
+  {
+    butterfly = gltf.scene
+  }
+)
+gltfLoader.load(
+
+  '/flower.glb',
+  (gltf) =>
+  {
+    flower = gltf.scene
+  }
+)
+
+gltfLoader.load(
+
+  '/tree2.glb',
+  (gltf) =>
+  {
+    tree2 = gltf.scene
+  }
+)
+gltfLoader.load(
+
+  '/tree3.glb',
+  (gltf) =>
+  {
+    tree3 = gltf.scene
+  }
+)
+gltfLoader.load(
+
+  '/tree3.glb',
+  (gltf) =>
+  {
+    tree3 = gltf.scene
+  }
+)
 
 
 gltfLoader.load(
@@ -133,6 +185,82 @@ gltfLoader.load(
 
     }
 )
+
+
+const createButterFly = function(){
+console.log('createButterfly')
+  mixer = new THREE.AnimationMixer(butterfly)
+
+
+
+}
+
+const createTree = function(){
+
+  console.log("singleset")
+  const randtree = Math.random()+1
+  const cupbow = new CANNON.Cylinder(.0310,.02,.026,8)
+  const plateDrop = new CANNON.Cylinder(.06,.03,.01,8)
+
+  const cupHandle = new CANNON.Cylinder(.02,.02,.002,8)
+  // cupHandle.quaternion.setClearColor(new CANNON.Vec3())
+  
+  const cupbody = new CANNON.Body({mass:1})
+  const platebody = new CANNON.Body({mass:1})
+  cupbody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1,0,0),Math.PI *0.5)
+  platebody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1,0,0),Math.PI *0.5)
+  cupbody.position=new CANNON.Vec3(0, .1, -.5)
+  platebody.position=new CANNON.Vec3(0, .08, -.5)
+
+
+
+
+
+  cupbody.material=defaultMaterial;
+  platebody.material=defaultMaterial
+  cupbody.addShape(cupbow,new CANNON.Vec3(0,0,0))
+  cupbody.addShape(cupHandle,new CANNON.Vec3(.115,0,0))
+  platebody.addShape(plateDrop,new CANNON.Vec3(0,0,0))
+
+
+
+  const singleFakeCup = new THREE.Group()
+  // singleplateMesh.rotation.x =  Math.PI * 0.5
+  const singleCup= singleGroup.children[1].clone()
+  const newsingleplate= singleGroup.children[0].clone()
+  newsingleplate.rotation.x =  Math.PI * 0.5
+  newsingleplate.position.z+=.03
+
+  singleCup.rotation.x +=  Math.PI * 0.5
+  singleCup.position.z +=.02
+  singleCup.position.y-=.14;
+  singleFakeCup.add(singleCup)
+  const plateMesh = new THREE.Group();
+  plateMesh.add(newsingleplate)
+  // console.log(singleGroup)
+  cupbody.sleepSpeedLimit = 1.0;
+  platebody.sleepSpeedLimit = 1.0;
+  plateArray.push(plateMesh)
+  
+  
+  plateMesh.scale.set(.2,.2,.2)
+  singleFakeCup.scale.set(.2,.2,.2)
+  singleFakeCup.position.set(0,0,-.5).applyMatrix4(controller.matrixWorld);
+  plateMesh.position.set(0,-.02,-.5).applyMatrix4(controller.matrixWorld);
+  platebody.position.copy(plateMesh.position)
+  cupbody.position.copy(singleFakeCup.position)
+  world.add(platebody)
+  scene.add(plateMesh)
+  world.addBody(cupbody)
+  scene.add(singleFakeCup)
+ 
+
+
+
+
+  objectsToUpdate.push({singleFakeCup,cupbody,plateMesh,platebody})
+  
+}
 
 gltfLoader.load(
   '/grass2.glb',
