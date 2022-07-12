@@ -9,14 +9,10 @@ import $ from "./Jquery"
 import gsap from "gsap"
 import { ARButton } from 'three/examples/jsm/webxr/ARButton.js';
 import { GridBroadphase } from 'cannon'
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
-
-
 
 let reticle= null
 let camera;
 let renderer;
-let animations = [];
 const container = document.createElement('div');
 document.body.appendChild(container);
 const textureLoader = new THREE.TextureLoader()
@@ -26,14 +22,6 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
-
-const grassMaterial = new THREE.MeshStandardMaterial({color:"#66a832"})
-const pinkMaterial = new THREE.MeshStandardMaterial({color:"#f757ed"})
-const orangeMaterial = new THREE.MeshStandardMaterial({color:"#fa4f1b"})
-const blueMaterial = new THREE.MeshStandardMaterial({color:"#2ef5ff"})
-const redMaterial = new THREE.MeshStandardMaterial({color:"#a11a56"})
-const yellowMaterial = new THREE.MeshStandardMaterial({color:"#edb021"})
-
 
 function init() {
   addReticleToScene()
@@ -48,16 +36,17 @@ function init() {
     }
   
 
+    const createFlower = ()=>{
 
-    
-    
+      
+    }
+  
    
   
     const createGrass =()=>{
   
 
       let randGrass= Math.floor(Math.random()*2+1)
-  
       console.log(randGrass)
       let grass
     
@@ -92,8 +81,14 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.xr.enabled = true; // we have to enable the renderer for webxr
 const controller= renderer.xr.getController(0);
+controller.addEventListener('select', ()=>{
+  console.log("Sdsdsdsdsd")
+  // if(reticle.visible){
+  // console.log("creategrass")
+  // createGrass()
+  // }
+    })
 scene.add(controller)
-console.log(controller)
 
 
 async function initializeHitTestSource() {
@@ -136,82 +131,7 @@ camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight,
 
 let grassgeo1;
 let grassgeo2;
-let tree1;
-let tree2;
-let tree3;
-let butterfly;
-let flower;
-let butterflyGroupArray = [];
 
-
-controller.addEventListener('select', ()=>{
-  let randButter= Math.floor(Math.random()*5+1)
-  let randFlower= Math.floor(Math.random()*5+1)
-  let randColor = Math.floor(Math.random()*5+1)
-
-  
-  console.log("creategrass2")
-  if(reticle.visible){
-  console.log("creategrass")
-  
-  createGrass(randColor)
-  if(randButter==3){
-  createFlower(randColor)
-  }
-  if(randFlower==2){
-    createButterFly(randColor)
-    }
-
-  }
-    })
-
-gltfLoader.load(
-
-  '/butterfly.glb',
-  (gltf) =>
-  {
-    butterfly = gltf
-
-    // createButterFly();
-
-   
-
-  }
-)
-gltfLoader.load(
-
-  '/flower.glb',
-  (gltf) =>
-  {
-    flower = gltf
-    // createFlower(flower);
-  }
-)
-
-gltfLoader.load(
-
-  '/tree2.glb',
-  (gltf) =>
-  {
-    tree2 = gltf.scene
-  }
-)
-gltfLoader.load(
-
-  '/tree3.glb',
-  (gltf) =>
-  {
-    tree3 = gltf.scene
-  }
-)
-gltfLoader.load(
-
-  '/tree3.glb',
-  (gltf) =>
-  {
-    tree3 = gltf.scene
-  }
-)
 
 
 gltfLoader.load(
@@ -225,166 +145,6 @@ gltfLoader.load(
 
     }
 )
-
-const createFlower = (color)=>{
-
-  let newFlower = SkeletonUtils.clone(flower.scene)
-  let pedals = newFlower.children[0].children[2].children[1]
-  switch(color){
-    case 1:
-      pedals.material = blueMaterial
-      break;
-
-    case 2:
-      pedals.material = pinkMaterial
-        break;
-    case 3:
-      pedals.material = redMaterial
-       break;
-  case 4:
-    pedals.material = orangeMaterial
-       break;
-   case 5:
-    pedals.material = yellowMaterial
-       break;
-  }
-  console.log(newFlower)
-  newFlower.scale.set(.02,.02,.02)
-  // newFlower.position.z-=1
-  
-    let mixer2 = new THREE.AnimationMixer(newFlower)
-    let action2 = mixer2.clipAction(flower.animations[0])
-    action2.clampWhenFinished = true;
-    action2.timeScale=1.5
-    action2.setLoop( THREE.LoopOnce )
-    animations.push(mixer2)
-    newFlower.position.setFromMatrixPosition(reticle.matrix);
-    newFlower.quaternion.setFromRotationMatrix(reticle.matrix);
-    newFlower.position.y+=.2
-
-    scene.add(newFlower)
-
-    setTimeout(() => {
-      action2.play()
-
-    }, 2000);
-
-    
-  }
-
-  const createButterFly = function(color){
-
-    console.log(butterfly)
-   
-      let newButterfly = SkeletonUtils.clone(butterfly.scene)
-      
-      let wings = newButterfly.children[0].children[2]
-      switch(color){
-        case 1:
-          wings.material = blueMaterial
-          break;
-
-        case 2:
-            wings.material = pinkMaterial
-            break;
-        case 3:
-           wings.material = redMaterial
-           break;
-      case 4:
-           wings.material = orangeMaterial
-           break;
-       case 5:
-           wings.material = yellowMaterial
-           break;
-      }
-      let butterflyGroup = new THREE.Group();
-      butterflyGroup.add(newButterfly)
-      butterflyGroup.position.setFromMatrixPosition(reticle.matrix);
-      butterflyGroup.quaternion.setFromRotationMatrix(reticle.matrix);
-      newButterfly.position.x-=1;
-      newButterfly.position.y+=1;
-      butterflyGroupArray.push(butterflyGroup)
-      scene.add(butterflyGroup)
-      
-      const mixer = new THREE.AnimationMixer(newButterfly)
-      let action = mixer.clipAction(butterfly.animations[0])
-      action.timeScale=.5
-      
-      action.play()
-      animations.push(mixer)
-
-    }
-
-const createTree = function(){
-
-  console.log("singleset")
-  const randtree = Math.random()+1
-  const cupbow = new CANNON.Cylinder(.0310,.02,.026,8)
-  const plateDrop = new CANNON.Cylinder(.06,.03,.01,8)
-
-  const cupHandle = new CANNON.Cylinder(.02,.02,.002,8)
-  // cupHandle.quaternion.setClearColor(new CANNON.Vec3())
-  
-  const cupbody = new CANNON.Body({mass:1})
-  const platebody = new CANNON.Body({mass:1})
-  cupbody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1,0,0),Math.PI *0.5)
-  platebody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1,0,0),Math.PI *0.5)
-  cupbody.position=new CANNON.Vec3(0, .1, -.5)
-  platebody.position=new CANNON.Vec3(0, .08, -.5)
-
-
-
-
-
-  cupbody.material=defaultMaterial;
-  platebody.material=defaultMaterial
-  cupbody.addShape(cupbow,new CANNON.Vec3(0,0,0))
-  cupbody.addShape(cupHandle,new CANNON.Vec3(.115,0,0))
-  platebody.addShape(plateDrop,new CANNON.Vec3(0,0,0))
-
-
-
-  const singleFakeCup = new THREE.Group()
-  // singleplateMesh.rotation.x =  Math.PI * 0.5
-  const singleCup= singleGroup.children[1].clone()
-  const newsingleplate= singleGroup.children[0].clone()
-  newsingleplate.rotation.x =  Math.PI * 0.5
-  newsingleplate.position.z+=.03
-
-  singleCup.rotation.x +=  Math.PI * 0.5
-  singleCup.position.z +=.02
-  singleCup.position.y-=.14;
-  singleFakeCup.add(singleCup)
-  const plateMesh = new THREE.Group();
-  plateMesh.add(newsingleplate)
-  // console.log(singleGroup)
-  cupbody.sleepSpeedLimit = 1.0;
-  platebody.sleepSpeedLimit = 1.0;
-  plateArray.push(plateMesh)
-  
-  
-  plateMesh.scale.set(.2,.2,.2)
-  singleFakeCup.scale.set(.2,.2,.2)
-  singleFakeCup.position.set(0,0,-.5).applyMatrix4(controller.matrixWorld);
-  plateMesh.position.set(0,-.02,-.5).applyMatrix4(controller.matrixWorld);
-  platebody.position.copy(plateMesh.position)
-  cupbody.position.copy(singleFakeCup.position)
-  world.add(platebody)
-  scene.add(plateMesh)
-  world.addBody(cupbody)
-  scene.add(singleFakeCup)
- 
-  container.appendChild(renderer.domElement);
-
-
-
-
-
-  objectsToUpdate.push({singleFakeCup,cupbody,plateMesh,platebody})
-  
-}
-
-
 
 gltfLoader.load(
   '/grass2.glb',
@@ -422,14 +182,16 @@ window.addEventListener('resize', () =>
 
 
 
+container.appendChild(renderer.domElement);
+
 
 /**
  * Lights
  */
- const ambientLight = new THREE.AmbientLight('green', .2)
+ const ambientLight = new THREE.AmbientLight('white', .2)
  scene.add(ambientLight)
  
- const directionalLight = new THREE.DirectionalLight('#ebdbb7', 1)
+ const directionalLight = new THREE.DirectionalLight('orange', 1)
  directionalLight.castShadow = true
  directionalLight.shadow.mapSize.set(1024, 1024)
  directionalLight.shadow.camera.far = 15
@@ -442,7 +204,7 @@ window.addEventListener('resize', () =>
 
 
 
-
+const grassMaterial = new THREE.MeshBasicMaterial({color:"green"})
 
 
 function animate() {
@@ -477,32 +239,6 @@ const elapsedTime = clock.getElapsedTime()
 const deltaTime = elapsedTime - oldElapsedTime
 oldElapsedTime = elapsedTime
  
-if(butterflyGroupArray.length>0){
-
-  for (let i=0; i<butterflyGroupArray.length; i++){butterflyGroupArray[i].rotation.y -=.01;
-}
-}
-// if(mixer2)
-// {
-//     mixer2.update(deltaTime)
-// }
-// if(mixer)
-// {
-//     mixer.update(deltaTime)
-// }
-if(animations.length>0)
-
-{
-  
-  animations.forEach(function(mixer){
-      mixer.update(deltaTime)
-
-  })
-
-// for(var i=0; i>animations.length; i++){
-//   animations[i].update(deltaTime)
-
-}
   if(frame){
     
     if(!hitTestSourceInitialized){
