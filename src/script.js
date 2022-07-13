@@ -12,6 +12,9 @@ import { GridBroadphase } from 'cannon'
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 
 
+let treeButton
+let grassButton
+
 
 let reticle= null
 let camera;
@@ -33,6 +36,37 @@ const orangeMaterial = new THREE.MeshStandardMaterial({color:"#fa4f1b"})
 const blueMaterial = new THREE.MeshStandardMaterial({color:"#2ef5ff"})
 const redMaterial = new THREE.MeshStandardMaterial({color:"#a11a56"})
 const yellowMaterial = new THREE.MeshStandardMaterial({color:"#edb021"})
+const treeButtonTexture = textureLoader.load('/treetag2.png')
+const grassButtonTexture = textureLoader.load('/grasstag.png')
+// const grassButtonMaterial = new THREE.MeshBasicMaterial({map:grassButtonTexture})
+
+// const threeButtonMaterial = new THREE.MeshBasicMaterial({map:treeButtonTexture})
+const grassButtonMaterial = new THREE.MeshBasicMaterial({map:grassButtonTexture})
+
+
+
+const treeButtonMaterial = new THREE.MeshBasicMaterial({map:treeButtonTexture})
+const buttonGeo = new THREE.BoxGeometry(.1, .1, .1);
+grassButtonMaterial.side = THREE.DoubleSide
+treeButtonMaterial.side = THREE.DoubleSide
+
+ treeButton = new THREE.Mesh(buttonGeo, treeButtonMaterial)
+ grassButton = new THREE.Mesh(buttonGeo, grassButtonMaterial)
+ grassButton.position.x+=.1
+ treeButton.position.z -=.5
+ grassButton.position.z-=.5
+ grassButton.rotateY=Math.PI*.5
+ treeButton.rotateY=Math.PI*.5
+
+
+ scene.add(grassButton)
+ scene.add(treeButton)
+
+
+
+
+
+
 
 
 function init() {
@@ -417,6 +451,10 @@ window.addEventListener('resize', () =>
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 })
+
+// controller.add(grassButton)
+// controller.add(treeButton)
+
 
   
 
