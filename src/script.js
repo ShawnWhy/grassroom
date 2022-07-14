@@ -379,7 +379,7 @@ const createTree = function(){
     console.log(reticle)
     // if( reticle.quaternion.z > Math.PI*.1 || reticle.quaternion.x>Math.PI*.1 ){
 
-      treeMesh.position.y = -2
+      treeMesh.position.y = 1
 
     // }
     // console.log("matrix")
@@ -387,6 +387,9 @@ const createTree = function(){
     // console.log(reticle.rotateY)
     
     scene.add(treeMesh)
+
+    gsap.to( treeMesh.position,{duration:.3,y:-2})
+
  
 }
 
