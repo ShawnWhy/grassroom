@@ -14,7 +14,7 @@ import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 
 let treeButton
 let grassButton
-
+let trigger = 'tree'
 
 let reticle= null
 let camera;
@@ -42,17 +42,22 @@ const grassButtonTexture = textureLoader.load('/grasstag.png')
 
 // const threeButtonMaterial = new THREE.MeshBasicMaterial({map:treeButtonTexture})
 const grassButtonMaterial = new THREE.MeshBasicMaterial({map:grassButtonTexture})
+const raycaster = new THREE.Raycaster()
+
+
 
 
 
 const treeButtonMaterial = new THREE.MeshBasicMaterial({map:treeButtonTexture})
-const buttonGeo = new THREE.BoxGeometry(.1, .1, .1);
+const buttonGeo = new THREE.PlaneGeometry(.1, .1);
 grassButtonMaterial.side = THREE.DoubleSide
 treeButtonMaterial.side = THREE.DoubleSide
+treeButtonMaterial.transparent= true;
+grassButtonMaterial.transparent= true;
 
  treeButton = new THREE.Mesh(buttonGeo, treeButtonMaterial)
  grassButton = new THREE.Mesh(buttonGeo, grassButtonMaterial)
- grassButton.position.x+=.1
+ grassButton.position.x+=.3
  treeButton.position.z -=.5
  grassButton.position.z-=.5
  grassButton.rotateY=Math.PI*.5
@@ -130,6 +135,7 @@ scene.add(controller)
 console.log(controller)
 
 
+
 async function initializeHitTestSource() {
 const session = renderer.xr.getSession();
   
@@ -184,11 +190,17 @@ controller.addEventListener('select', ()=>{
   let randColor = Math.floor(Math.random()*5+1)
 
   
-  console.log("creategrass2")
+  // console.log("creategrass2")
   if(reticle.visible){
-  console.log("creategrass")
+  // console.log("creategrass")
   
-  createGrass(randColor)
+  if(trigger=="grass"){
+    createGrass()
+  }
+  else if(trigger =="tree"){  
+  createTree()
+  }
+  
   if(randButter==3){
   createFlower(randColor)
   }
@@ -205,11 +217,6 @@ gltfLoader.load(
   (gltf) =>
   {
     butterfly = gltf
-
-    // createButterFly();
-
-   
-
   }
 )
 gltfLoader.load(
@@ -224,18 +231,18 @@ gltfLoader.load(
 
 gltfLoader.load(
 
-  '/tree2.glb',
+  '/tree.glb',
   (gltf) =>
   {
-    tree2 = gltf.scene
+    tree1 = gltf.scene
   }
 )
 gltfLoader.load(
 
-  '/tree3.glb',
+  '/tree2.glb',
   (gltf) =>
   {
-    tree3 = gltf.scene
+    tree2 = gltf.scene
   }
 )
 gltfLoader.load(
@@ -334,7 +341,7 @@ const createFlower = (color)=>{
       let butterflyGroup = new THREE.Group();
       butterflyGroup.add(newButterfly)
       butterflyGroup.position.setFromMatrixPosition(reticle.matrix);
-      butterflyGroup.quaternion.setFromRotationMatrix(reticle.matrix);
+      // butterflyGroup.quaternion.setFromRotationMatrix(reticle.matrix);
       newButterfly.position.x-=1;
       newButterfly.position.y+=1;
       butterflyGroupArray.push(butterflyGroup)
@@ -351,71 +358,36 @@ const createFlower = (color)=>{
 
 const createTree = function(){
 
-  console.log("singleset")
-  const randtree = Math.random()+1
-  const cupbow = new CANNON.Cylinder(.0310,.02,.026,8)
-  const plateDrop = new CANNON.Cylinder(.06,.03,.01,8)
-
-  const cupHandle = new CANNON.Cylinder(.02,.02,.002,8)
-  // cupHandle.quaternion.setClearColor(new CANNON.Vec3())
   
-  const cupbody = new CANNON.Body({mass:1})
-  const platebody = new CANNON.Body({mass:1})
-  cupbody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1,0,0),Math.PI *0.5)
-  platebody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1,0,0),Math.PI *0.5)
-  cupbody.position=new CANNON.Vec3(0, .1, -.5)
-  platebody.position=new CANNON.Vec3(0, .08, -.5)
+  let treeMesh;
 
-
-
-
-
-  cupbody.material=defaultMaterial;
-  platebody.material=defaultMaterial
-  cupbody.addShape(cupbow,new CANNON.Vec3(0,0,0))
-  cupbody.addShape(cupHandle,new CANNON.Vec3(.115,0,0))
-  platebody.addShape(plateDrop,new CANNON.Vec3(0,0,0))
-
-
-
-  const singleFakeCup = new THREE.Group()
-  // singleplateMesh.rotation.x =  Math.PI * 0.5
-  const singleCup= singleGroup.children[1].clone()
-  const newsingleplate= singleGroup.children[0].clone()
-  newsingleplate.rotation.x =  Math.PI * 0.5
-  newsingleplate.position.z+=.03
-
-  singleCup.rotation.x +=  Math.PI * 0.5
-  singleCup.position.z +=.02
-  singleCup.position.y-=.14;
-  singleFakeCup.add(singleCup)
-  const plateMesh = new THREE.Group();
-  plateMesh.add(newsingleplate)
-  // console.log(singleGroup)
-  cupbody.sleepSpeedLimit = 1.0;
-  platebody.sleepSpeedLimit = 1.0;
-  plateArray.push(plateMesh)
-  
-  
-  plateMesh.scale.set(.2,.2,.2)
-  singleFakeCup.scale.set(.2,.2,.2)
-  singleFakeCup.position.set(0,0,-.5).applyMatrix4(controller.matrixWorld);
-  plateMesh.position.set(0,-.02,-.5).applyMatrix4(controller.matrixWorld);
-  platebody.position.copy(plateMesh.position)
-  cupbody.position.copy(singleFakeCup.position)
-  world.add(platebody)
-  scene.add(plateMesh)
-  world.addBody(cupbody)
-  scene.add(singleFakeCup)
  
-  container.appendChild(renderer.domElement);
+  let randTree= Math.floor(Math.random()*3+1)
 
+  switch(randTree){
+    case 1 : treeMesh = tree1.clone()
+    break;
 
+    case 2 :  treeMesh = tree2.clone()
+    break;
 
+    case 3 :  treeMesh = tree3.clone()
+    }
+    treeMesh.scale.set(.5,.5,.5)
+    treeMesh.position.setFromMatrixPosition(reticle.matrix);
+    // newFlower.quaternion.setFromRotationMatrix(reticle.matrix);
+    console.log(reticle)
+    // if( reticle.quaternion.z > Math.PI*.1 || reticle.quaternion.x>Math.PI*.1 ){
 
+      treeMesh.position.y = -2
 
-  objectsToUpdate.push({singleFakeCup,cupbody,plateMesh,platebody})
-  
+    // }
+    // console.log("matrix")
+    // console.log(reticle.rotation)
+    // console.log(reticle.rotateY)
+    
+    scene.add(treeMesh)
+ 
 }
 
 
@@ -480,6 +452,7 @@ window.addEventListener('resize', () =>
 
 
 
+ 
 
 
 
@@ -504,7 +477,8 @@ let previousTime = 0
       renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-
+let intersects2 = []
+let intersects1 = []
 
 
 init();
@@ -514,7 +488,50 @@ function render(timestamp, frame) {
 const elapsedTime = clock.getElapsedTime()
 const deltaTime = elapsedTime - oldElapsedTime
 oldElapsedTime = elapsedTime
- 
+raycaster.setFromCamera(new THREE.Vector3(0,0,-.05).applyMatrix4(controller.matrixWorld), camera)
+
+ intersects1 = raycaster.intersectObject(treeButton)
+ intersects2 = raycaster.intersectObject(grassButton)
+//  console.log("intersects1" + intersects1)
+
+//  console.log("intersects2" + intersects2)
+
+controller.addEventListener('select', ()=>{
+
+  if(intersects1.length>0){
+
+    trigger = "tree"
+  }
+
+  else if ( intersects2.length>0){
+
+    trigger = "grass"
+  }
+
+})
+
+if(intersects1.length>0 && treeButton){
+
+  treeButton.rotation.z +=.1
+
+}
+
+if(intersects2.length>0 && grassButton){
+
+  grassButton.rotation.z +=.1
+
+}
+
+if(trigger ==  "tree" && treeButton){
+
+  treeButton.rotation.y +=.1
+
+}
+if(trigger == "grass" && grassButton){
+
+  grassButton.rotation.y +=.1
+
+}
 if(butterflyGroupArray.length>0){
 
   for (let i=0; i<butterflyGroupArray.length; i++){butterflyGroupArray[i].rotation.y -=.01;
