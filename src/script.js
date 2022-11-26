@@ -386,6 +386,8 @@ const createTree = function(){
     // console.log(reticle.rotation)
     // console.log(reticle.rotateY)
     
+
+   
     scene.add(treeMesh)
 
     gsap.to( treeMesh.position,{duration:.3,y:-2})
@@ -405,6 +407,7 @@ gltfLoader.load(
 
   }
 )
+
 
 
 const sizes = {

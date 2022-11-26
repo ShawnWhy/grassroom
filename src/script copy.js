@@ -72,6 +72,7 @@ function init() {
 const gltfLoader = new GLTFLoader()
 // gltfLoader.setDRACOLoader(dracoLoader)
 
+
 let hitTestSource = null;
 let localSpace = null;
 let hitTestSourceInitialized = false;
